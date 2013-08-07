@@ -1,3 +1,39 @@
+// The MIT License (MIT)
+//
+// Copyright (c) 2013 Quincy Bowers
+//
+// Permission is hereby granted, free of charge, to any person obtaining a copy
+// of this software and associated documentation files (the "Software"), to
+// deal in the Software without restriction, including without limitation the
+// rights to use, copy, modify, merge, publish, distribute, sublicense, and/or
+// sell copies of the Software, and to permit persons to whom the Software is
+// furnished to do so, subject to the following conditions:
+//
+// The above copyright notice and this permission notice shall be included in
+// all copies or substantial portions of the Software.
+//
+// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+// IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+// FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+// AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+// LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
+// FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS
+// IN THE SOFTWARE.
+
+/*
+Package configo extends the standard flag package to include configuration file
+parsing and management.
+
+Usage:
+
+Usage is almost identical to the flag package: declare flags, parse flags, use
+flags.  Command line flags override values parsed from a configuration file.
+
+Configuration files consist of lines of key/value pairs, delimited by '='.  The
+delimiter can be changed if needed by setting configo.SetDelimiter().  Blank lines
+and lines where the first non-whitespace character is '#' are ignored.
+Trailing comments are not allowed, however.
+*/
 package configo
 
 import (
