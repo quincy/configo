@@ -3,7 +3,9 @@ configo
 
 Simple configuration files _AND_ command line parsing for Go.
 
-The same API provided by the flag package, extended for use with configuration files.  Use a single function to setup a command line flag and configuration file option simultaneously.
+The same API provided by the flag package, extended for use with configuration
+files.  Use a single function to setup a command line flag and configuration
+file option simultaneously.  Create default configuration files automatically.
 
 Get the source
 
@@ -15,19 +17,21 @@ Usage
     // file: example.go
     package main
     
-    import "github.com/quincy/configo"
+    import (
+        "fmt"
+        "github.com/quincy/configo"
+    )
     
     var species = configo.String("species", "gopher", "the species we are studying", true, true)
     //                                                                                 ^     ^
     //                                This option can be set from the command line ----+     |
     //                                                                                       |
-    //                                This option can be set from the configuration file ----+
+    //                        This option can be set from the configuration file ------------+
 
     configo.SetDelimiter(":")  // Default is "="
     configo.Parse()
     
     fmt.Printf("Value of species is %s\n", species)
-
 
 The first time your program is run a default config file will be created with
 all options set to defaults, commented with the usage text.
