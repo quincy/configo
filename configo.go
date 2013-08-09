@@ -554,13 +554,21 @@ func (c *ConfigoSet) NFlag() int {
     return flag.NFlag()
 }
 
-// Parse parses the configuration file in this ConfigoSet setting all options
-// found there.  It then parses the command-line flags from os.Args[1:],
-// overwriting any conifguration options already set.  Must be called after all
+// Parse parses the command-line flags from os.Args[1:] and sets the values in
+// this ConfigoSet.  Then the configuration file is parsed and any item that
+// was not already set by the command line is set.  Must be called after all
 // configuration options are defined and before conifguration options are
 // accessed by the program.
 func (c *ConfigoSet) Parse() (err error) {
-    // Create the config file if it does not exist.
+    // Start by parsing the command line with the flag package and then set the
+    // parsed values into the ConfigoSet.
+    flag.Parse()
+    flag.Visit(func(f *flag.Flag) {
+        c.Set(f.Name, f.Value.String())
+    })
+
+    // Now parse the configuration file, but first create the config file if it
+    // does not exist.  If that's the case we're all done and we can return.
     if _, err = os.Stat(c.path); err != nil {
         if !os.IsNotExist(err) {
             return
@@ -568,11 +576,11 @@ func (c *ConfigoSet) Parse() (err error) {
 
         c.parsed = true
         err = c.WriteDefaultConfig(c.path)
-        if err != nil {
-            return
-        }
+        return
     }
 
+    // Parse the config file, but only set the options that didn't appear on
+    // the command line.
     if !c.parsed {
         var content []byte
         content, err = ioutil.ReadFile(c.path)
@@ -592,22 +600,21 @@ func (c *ConfigoSet) Parse() (err error) {
                 name  = strings.TrimSpace(fields[0])
                 value = strings.TrimSpace(fields[1])
 
-                config := c.Lookup(name)
-                if config == nil {
-                    panic(errors.New("unknown configuration item"))
-                }
+                // Check if the item was already set from the command line.
+                if _, exists := c.actual[name]; !exists {
+                    // Is this even a valid config item?
+                    config := c.Lookup(name)
+                    if config == nil {
+                        panic(errors.New("unknown configuration item"))
+                    }
 
-                c.Set(name, value)
+                    c.Set(name, value)
+                }
             }
         }
 
         c.parsed = true
     }
-
-    flag.Parse()
-    flag.Visit(func(f *flag.Flag) {
-        c.Set(f.Name, f.Value.String())
-    })
 
     return
 }
