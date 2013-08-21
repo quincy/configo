@@ -6,7 +6,7 @@ import (
 	"strings"
 	"time"
 
-    "github.com/quincy/configo"
+	"github.com/quincy/configo"
 )
 
 // Example 1: A single string flag called "species" with default value "gopher".
@@ -23,7 +23,7 @@ func init() {
 		usage         = "the variety of gopher"
 	)
 	configo.StringVar(&gopherType, "gopher_type", defaultGopher, usage, true, true)
-    // shorthand version is not valid in the config file
+	// shorthand version is not valid in the config file
 	configo.StringVar(&gopherType, "g", defaultGopher, usage+" (shorthand)", true, false)
 }
 
@@ -71,12 +71,11 @@ func init() {
 }
 
 func main() {
-    if err := configo.Parse(); err != nil {
-        panic(err)
-    }
+	if err := configo.Parse(); err != nil {
+		panic(err)
+	}
 
-    fmt.Printf("species      = %s\n", *species)
-    fmt.Printf("gopherType   = %s\n", gopherType)
-    fmt.Printf("intervalFlag = %s\n", intervalFlag)
+	fmt.Printf("species      = %s\n", *species)
+	fmt.Printf("gopherType   = %s\n", gopherType)
+	fmt.Printf("intervalFlag = %s\n", intervalFlag)
 }
-
