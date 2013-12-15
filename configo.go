@@ -286,33 +286,131 @@ func (c *ConfigoSet) Args() []string {
 // BoolVar defines a bool config item with specified name, default value, and
 // usage string.  The argument p points to a bool variable in which to store
 // the value of the flag.
-func (c *ConfigoSet) BoolVar(p *bool, name string, value bool, usage string, isFlag, isConfig bool) {
+//
+// This item can be specified on the command line and in the configuration
+// file.
+func (c *ConfigoSet) BoolVar(p *bool, name string, value bool, usage string) {
+	isFlag := true
+	isConfig := true
 	c.Var(newBoolValue(value, p), name, usage, isFlag, isConfig)
-    flag.BoolVar(p, name, value, usage)
+	flag.BoolVar(p, name, value, usage)
+}
+
+// BoolConfigVar defines a bool config item with specified name, default value,
+// and usage string.  The argument p points to a bool variable in which to
+// store the value of the flag.
+//
+// This item can only be specified in the configuration file.
+func (c *ConfigoSet) BoolConfigVar(p *bool, name string, value bool, usage string) {
+	isFlag := false
+	isConfig := true
+	c.Var(newBoolValue(value, p), name, usage, isFlag, isConfig)
+	flag.BoolVar(p, name, value, usage)
+}
+
+// BoolFlagVar defines a bool command line flag item with specified name,
+// default value, and usage string.  The argument p points to a bool variable
+// in which to store the value of the flag.
+//
+// This item can only be specified on the command line.
+func (c *ConfigoSet) BoolFlagVar(p *bool, name string, value bool, usage string) {
+	isFlag := true
+	isConfig := false
+	c.Var(newBoolValue(value, p), name, usage, isFlag, isConfig)
+	flag.BoolVar(p, name, value, usage)
 }
 
 // BoolVar defines a bool config item with specified name, default value, and
 // usage string.  The argument p points to a bool variable in which to store
 // the value of the flag.
-func BoolVar(p *bool, name string, value bool, usage string, isFlag, isConfig bool) {
+//
+// This item can be specified on the command line and in the configuration
+// file.
+func BoolVar(p *bool, name string, value bool, usage string) {
+	isFlag := true
+	isConfig := true
 	configuration.Var(newBoolValue(value, p), name, usage, isFlag, isConfig)
-    flag.BoolVar(p, name, value, usage)
+	flag.BoolVar(p, name, value, usage)
+}
+
+// BoolConfigVar defines a bool config item with specified name, default value, and
+// usage string.  The argument p points to a bool variable in which to store
+// the value of the flag.
+//
+// This item can only be specified in the configuration file.
+func BoolConfigVar(p *bool, name string, value bool, usage string) {
+	isFlag := false
+	isConfig := true
+	configuration.Var(newBoolValue(value, p), name, usage, isFlag, isConfig)
+	flag.BoolVar(p, name, value, usage)
+}
+
+// BoolFlagVar defines a bool config item with specified name, default value, and
+// usage string.  The argument p points to a bool variable in which to store
+// the value of the flag.
+//
+// This item can only be specified on the command line.
+func BoolFlagVar(p *bool, name string, value bool, usage string) {
+	isFlag := true
+	isConfig := false
+	configuration.Var(newBoolValue(value, p), name, usage, isFlag, isConfig)
+	flag.BoolVar(p, name, value, usage)
 }
 
 // Bool defines a bool configuration option with specified name, default value,
 // and usage string.  The isFlag and isConfig parameters control whether the
 // option is valid on the command line and in the configuration file respectively.
-func (c *ConfigoSet) Bool(name string, value bool, usage string, isFlag, isConfig bool) *bool {
-    p := new(bool)
-    c.BoolVar(p, name, value, usage, isFlag, isConfig)
-    return p
+//
+// This item can be specified on the command line and in the configuration
+// file.
+func (c *ConfigoSet) Bool(name string, value bool, usage string) *bool {
+	p := new(bool)
+	c.BoolVar(p, name, value, usage)
+	return p
+}
+
+// BoolFlag defines a bool configuration option with specified name, default value,
+// and usage string.
+//
+// This item can only be specified on the command line.
+func (c *ConfigoSet) BoolFlag(name string, value bool, usage string) *bool {
+	p := new(bool)
+	c.BoolFlagVar(p, name, value, usage)
+	return p
+}
+
+// BoolConfig defines a bool configuration option with specified name, default
+// value, and usage string.
+//
+// This item can only be specified in the configuration file.
+func (c *ConfigoSet) BoolConfig(name string, value bool, usage string) *bool {
+	p := new(bool)
+	c.BoolConfigVar(p, name, value, usage)
+	return p
 }
 
 // Bool defines a bool config item with specified name, default value, and
 // usage string.  The return value is the address of a bool variable that
 // stores the value of the config item.
-func Bool(name string, value bool, usage string, isFlag, isConfig bool) *bool {
-    return configuration.Bool(name, value, usage, isFlag, isConfig)
+//
+// This item can be specified on the command line and in the configuration
+// file.
+func Bool(name string, value bool, usage string) *bool {
+	return configuration.Bool(name, value, usage)
+}
+
+// BoolFlag defines a bool config item with specified name, default value, and
+// usage string.  The return value is the address of a bool variable that
+// stores the value of the config item.
+func BoolFlag(name string, value bool, usage string) *bool {
+	return configuration.Bool(name, value, usage)
+}
+
+// BoolConfig defines a bool config item with specified name, default value, and
+// usage string.  The return value is the address of a bool variable that
+// stores the value of the config item.
+func BoolConfig(name string, value bool, usage string) *bool {
+	return configuration.Bool(name, value, usage)
 }
 
 // IntVar defines an int flag with specified name, default value, and usage string.
