@@ -215,7 +215,7 @@ func (d *durationValue) String() string { return (*time.Duration)(d).String() }
 
 // The default set of configuration options.
 var baseProgName string = filepath.Base(os.Args[0])
-var configuration = NewConfigoSet(baseProgName, flag.ExitOnError, defaultConfigPath())
+var configuration = NewConfigoSet(baseProgName, flag.ExitOnError, DefaultConfigPath())
 
 // NewConfigoSet returns a new, empty configuration set with the specified name
 // and error handling property.
@@ -233,7 +233,7 @@ func NewConfigoSet(name string, errorHandling flag.ErrorHandling, path string) *
 // either in the current user's home directory, if there is a current user, or
 // in the current working directory.  The name of the config file will be the
 // standard unix naming convention "." + {ProgramName} + "rc".
-func defaultConfigPath() string {
+func DefaultConfigPath() string {
 	usr, err := user.Current()
 	if err != nil {
 		return fmt.Sprintf(".%src", baseProgName)
