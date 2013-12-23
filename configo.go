@@ -553,9 +553,9 @@ func (c *ConfigoSet) NFlag() int {
 	return flag.NFlag()
 }
 
-// Parse parses the configuration file in this ConfigoSet setting all options
-// found there.  It then parses the command-line flags from os.Args[1:],
-// overwriting any conifguration options already set.  Must be called after all
+// Parse parses the command-line flags from os.Args[1:] and sets the values in
+// this ConfigoSet.  Then the configuration file is parsed and any item that
+// was not already set by the command line is set.  Must be called after all
 // configuration options are defined and before conifguration options are
 // accessed by the program.
 func (c *ConfigoSet) Parse() (err error) {
