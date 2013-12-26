@@ -236,6 +236,7 @@ func NewConfigoSet(name string, errorHandling flag.ErrorHandling, path string) *
 func defaultConfigPath() string {
 	usr, err := user.Current()
 	if err != nil {
+		// TODO This function does not appear to be used.
 		return fmt.Sprintf(".%src", baseProgName)
 	}
 	return fmt.Sprintf("%s/.%src", usr.HomeDir, baseProgName)
@@ -283,6 +284,8 @@ func (c *ConfigoSet) Args() []string {
 	return flag.Args()
 }
 
+// -- User functions for registering bool flags
+
 // BoolVar defines a bool config item with specified name, default value, and
 // usage string.  The argument p points to a bool variable in which to store
 // the value of the flag.
@@ -305,7 +308,6 @@ func (c *ConfigoSet) BoolConfigVar(p *bool, name string, value bool, usage strin
 	isFlag := false
 	isConfig := true
 	c.Var(newBoolValue(value, p), name, usage, isFlag, isConfig)
-	flag.BoolVar(p, name, value, usage)
 }
 
 // BoolFlagVar defines a bool command line flag item with specified name,
@@ -342,7 +344,6 @@ func BoolConfigVar(p *bool, name string, value bool, usage string) {
 	isFlag := false
 	isConfig := true
 	configuration.Var(newBoolValue(value, p), name, usage, isFlag, isConfig)
-	flag.BoolVar(p, name, value, usage)
 }
 
 // BoolFlagVar defines a bool config item with specified name, default value, and
@@ -403,210 +404,679 @@ func Bool(name string, value bool, usage string) *bool {
 // usage string.  The return value is the address of a bool variable that
 // stores the value of the config item.
 func BoolFlag(name string, value bool, usage string) *bool {
-	return configuration.Bool(name, value, usage)
+	return configuration.BoolFlag(name, value, usage)
 }
 
 // BoolConfig defines a bool config item with specified name, default value, and
 // usage string.  The return value is the address of a bool variable that
 // stores the value of the config item.
 func BoolConfig(name string, value bool, usage string) *bool {
-	return configuration.Bool(name, value, usage)
+	return configuration.BoolConfig(name, value, usage)
 }
+
+// -- User functions for registering Int flags
 
 // IntVar defines an int flag with specified name, default value, and usage string.
 // The argument p points to an int variable in which to store the value of the flag.
-func (c *ConfigoSet) IntVar(p *int, name string, value int, usage string, isFlag, isConfig bool) {
+func (c *ConfigoSet) IntVar(p *int, name string, value int, usage string) {
+	isFlag := true
+	isConfig := true
+	c.Var(newIntValue(value, p), name, usage, isFlag, isConfig)
+	flag.IntVar(p, name, value, usage)
+}
+
+// IntFlagVar defines an int flag with specified name, default value, and usage string.
+// The argument p points to an int variable in which to store the value of the flag.
+func (c *ConfigoSet) IntFlagVar(p *int, name string, value int, usage string) {
+	isFlag := true
+	isConfig := false
+	c.Var(newIntValue(value, p), name, usage, isFlag, isConfig)
+	flag.IntVar(p, name, value, usage)
+}
+
+// IntConfigVar defines an int flag with specified name, default value, and usage string.
+// The argument p points to an int variable in which to store the value of the flag.
+func (c *ConfigoSet) IntConfigVar(p *int, name string, value int, usage string) {
+	isFlag := false
+	isConfig := true
 	c.Var(newIntValue(value, p), name, usage, isFlag, isConfig)
 	flag.IntVar(p, name, value, usage)
 }
 
 // IntVar defines an int flag with specified name, default value, and usage string.
 // The argument p points to an int variable in which to store the value of the flag.
-func IntVar(p *int, name string, value int, usage string, isFlag, isConfig bool) {
+func IntVar(p *int, name string, value int, usage string) {
+	isFlag := true
+	isConfig := true
+	configuration.Var(newIntValue(value, p), name, usage, isFlag, isConfig)
+	flag.IntVar(p, name, value, usage)
+}
+
+// IntVar defines an int flag with specified name, default value, and usage string.
+// The argument p points to an int variable in which to store the value of the flag.
+func IntConfigVar(p *int, name string, value int, usage string) {
+	isFlag := false
+	isConfig := true
+	configuration.Var(newIntValue(value, p), name, usage, isFlag, isConfig)
+	flag.IntVar(p, name, value, usage)
+}
+
+// IntVar defines an int flag with specified name, default value, and usage string.
+// The argument p points to an int variable in which to store the value of the flag.
+func IntFlagVar(p *int, name string, value int, usage string) {
+	isFlag := true
+	isConfig := false
 	configuration.Var(newIntValue(value, p), name, usage, isFlag, isConfig)
 	flag.IntVar(p, name, value, usage)
 }
 
 // Int defines an int flag with specified name, default value, and usage string.
 // The return value is the address of an int variable that stores the value of the flag.
-func (c *ConfigoSet) Int(name string, value int, usage string, isFlag, isConfig bool) *int {
+func (c *ConfigoSet) Int(name string, value int, usage string) *int {
 	p := new(int)
-	c.IntVar(p, name, value, usage, isFlag, isConfig)
+	c.IntVar(p, name, value, usage)
 	return p
 }
 
 // Int defines an int flag with specified name, default value, and usage string.
 // The return value is the address of an int variable that stores the value of the flag.
-func Int(name string, value int, usage string, isFlag, isConfig bool) *int {
-	return configuration.Int(name, value, usage, isFlag, isConfig)
+func (c *ConfigoSet) IntConfig(name string, value int, usage string) *int {
+	p := new(int)
+	c.IntConfigVar(p, name, value, usage)
+	return p
+}
+
+// Int defines an int flag with specified name, default value, and usage string.
+// The return value is the address of an int variable that stores the value of the flag.
+func (c *ConfigoSet) IntFlag(name string, value int, usage string) *int {
+	p := new(int)
+	c.IntFlagVar(p, name, value, usage)
+	return p
+}
+
+// Int defines an int flag with specified name, default value, and usage string.
+// The return value is the address of an int variable that stores the value of the flag.
+func Int(name string, value int, usage string) *int {
+	return configuration.Int(name, value, usage)
+}
+
+// Int defines an int flag with specified name, default value, and usage string.
+// The return value is the address of an int variable that stores the value of the flag.
+func IntConfig(name string, value int, usage string) *int {
+	return configuration.IntConfig(name, value, usage)
+}
+
+// Int defines an int flag with specified name, default value, and usage string.
+// The return value is the address of an int variable that stores the value of the flag.
+func IntFlag(name string, value int, usage string) *int {
+	return configuration.IntFlag(name, value, usage)
 }
 
 // Int64Var defines an int64 flag with specified name, default value, and usage string.
 // The argument p points to an int64 variable in which to store the value of the flag.
-func (c *ConfigoSet) Int64Var(p *int64, name string, value int64, usage string, isFlag, isConfig bool) {
+func (c *ConfigoSet) Int64Var(p *int64, name string, value int64, usage string) {
+	isFlag := true
+	isConfig := true
 	c.Var(newInt64Value(value, p), name, usage, isFlag, isConfig)
 	flag.Int64Var(p, name, value, usage)
 }
 
 // Int64Var defines an int64 flag with specified name, default value, and usage string.
 // The argument p points to an int64 variable in which to store the value of the flag.
-func Int64Var(p *int64, name string, value int64, usage string, isFlag, isConfig bool) {
+func (c *ConfigoSet) Int64FlagVar(p *int64, name string, value int64, usage string) {
+	isFlag := true
+	isConfig := false
+	c.Var(newInt64Value(value, p), name, usage, isFlag, isConfig)
+	flag.Int64Var(p, name, value, usage)
+}
+
+// Int64Var defines an int64 flag with specified name, default value, and usage string.
+// The argument p points to an int64 variable in which to store the value of the flag.
+func (c *ConfigoSet) Int64ConfigVar(p *int64, name string, value int64, usage string) {
+	isFlag := false
+	isConfig := true
+	c.Var(newInt64Value(value, p), name, usage, isFlag, isConfig)
+}
+
+// Int64Var defines an int64 flag with specified name, default value, and usage string.
+// The argument p points to an int64 variable in which to store the value of the flag.
+func Int64Var(p *int64, name string, value int64, usage string) {
+	isFlag := true
+	isConfig := false
+	configuration.Var(newInt64Value(value, p), name, usage, isFlag, isConfig)
+	flag.Int64Var(p, name, value, usage)
+}
+
+// Int64Var defines an int64 flag with specified name, default value, and usage string.
+// The argument p points to an int64 variable in which to store the value of the flag.
+func Int64ConfigVar(p *int64, name string, value int64, usage string) {
+	isFlag := false
+	isConfig := true
+	configuration.Var(newInt64Value(value, p), name, usage, isFlag, isConfig)
+}
+
+// Int64Var defines an int64 flag with specified name, default value, and usage string.
+// The argument p points to an int64 variable in which to store the value of the flag.
+func Int64FlagVar(p *int64, name string, value int64, usage string) {
+	isFlag := true
+	isConfig := false
 	configuration.Var(newInt64Value(value, p), name, usage, isFlag, isConfig)
 	flag.Int64Var(p, name, value, usage)
 }
 
 // Int64 defines an int64 flag with specified name, default value, and usage string.
 // The return value is the address of an int64 variable that stores the value of the flag.
-func (c *ConfigoSet) Int64(name string, value int64, usage string, isFlag, isConfig bool) *int64 {
+func (c *ConfigoSet) Int64(name string, value int64, usage string) *int64 {
 	p := new(int64)
-	c.Int64Var(p, name, value, usage, isFlag, isConfig)
+	c.Int64Var(p, name, value, usage)
 	return p
 }
 
 // Int64 defines an int64 flag with specified name, default value, and usage string.
 // The return value is the address of an int64 variable that stores the value of the flag.
-func Int64(name string, value int64, usage string, isFlag, isConfig bool) *int64 {
-	return configuration.Int64(name, value, usage, isFlag, isConfig)
+func (c *ConfigoSet) Int64Flag(name string, value int64, usage string) *int64 {
+	p := new(int64)
+	c.Int64FlagVar(p, name, value, usage)
+	return p
+}
+
+// Int64 defines an int64 flag with specified name, default value, and usage string.
+// The return value is the address of an int64 variable that stores the value of the flag.
+func (c *ConfigoSet) Int64Config(name string, value int64, usage string) *int64 {
+	p := new(int64)
+	c.Int64ConfigVar(p, name, value, usage)
+	return p
+}
+
+// Int64 defines an int64 flag with specified name, default value, and usage string.
+// The return value is the address of an int64 variable that stores the value of the flag.
+func Int64(name string, value int64, usage string) *int64 {
+	return configuration.Int64(name, value, usage)
+}
+
+// Int64 defines an int64 flag with specified name, default value, and usage string.
+// The return value is the address of an int64 variable that stores the value of the flag.
+func Int64Flag(name string, value int64, usage string) *int64 {
+	return configuration.Int64Flag(name, value, usage)
+}
+
+// Int64 defines an int64 flag with specified name, default value, and usage string.
+// The return value is the address of an int64 variable that stores the value of the flag.
+func Int64Config(name string, value int64, usage string) *int64 {
+	return configuration.Int64Config(name, value, usage)
 }
 
 // UintVar defines a uint flag with specified name, default value, and usage string.
 // The argument p points to a uint variable in which to store the value of the flag.
-func (c *ConfigoSet) UintVar(p *uint, name string, value uint, usage string, isFlag, isConfig bool) {
+func (c *ConfigoSet) UintVar(p *uint, name string, value uint, usage string) {
+	isFlag := true
+	isConfig := true
+	c.Var(newUintValue(value, p), name, usage, isFlag, isConfig)
+	flag.UintVar(p, name, value, usage)
+}
+
+// UintVar defines a uint flag with specified name, default value, and usage string.
+// The argument p points to a uint variable in which to store the value of the flag.
+func (c *ConfigoSet) UintFlagVar(p *uint, name string, value uint, usage string) {
+	isFlag := true
+	isConfig := false
+	c.Var(newUintValue(value, p), name, usage, isFlag, isConfig)
+	flag.UintVar(p, name, value, usage)
+}
+
+// UintVar defines a uint flag with specified name, default value, and usage string.
+// The argument p points to a uint variable in which to store the value of the flag.
+func (c *ConfigoSet) UintConfigVar(p *uint, name string, value uint, usage string) {
+	isFlag := true
+	isConfig := false
 	c.Var(newUintValue(value, p), name, usage, isFlag, isConfig)
 	flag.UintVar(p, name, value, usage)
 }
 
 // UintVar defines a uint flag with specified name, default value, and usage string.
 // The argument p points to a uint  variable in which to store the value of the flag.
-func UintVar(p *uint, name string, value uint, usage string, isFlag, isConfig bool) {
+func UintVar(p *uint, name string, value uint, usage string) {
+	isFlag := true
+	isConfig := true
+	configuration.Var(newUintValue(value, p), name, usage, isFlag, isConfig)
+	flag.UintVar(p, name, value, usage)
+}
+
+// UintVar defines a uint flag with specified name, default value, and usage string.
+// The argument p points to a uint  variable in which to store the value of the flag.
+func UintFlagVar(p *uint, name string, value uint, usage string) {
+	isFlag := true
+	isConfig := false
+	configuration.Var(newUintValue(value, p), name, usage, isFlag, isConfig)
+	flag.UintVar(p, name, value, usage)
+}
+
+// UintVar defines a uint flag with specified name, default value, and usage string.
+// The argument p points to a uint  variable in which to store the value of the flag.
+func UintConfigVar(p *uint, name string, value uint, usage string) {
+	isFlag := false
+	isConfig := true
 	configuration.Var(newUintValue(value, p), name, usage, isFlag, isConfig)
 	flag.UintVar(p, name, value, usage)
 }
 
 // Uint defines a uint flag with specified name, default value, and usage string.
 // The return value is the address of a uint  variable that stores the value of the flag.
-func (c *ConfigoSet) Uint(name string, value uint, usage string, isFlag, isConfig bool) *uint {
+func (c *ConfigoSet) Uint(name string, value uint, usage string) *uint {
 	p := new(uint)
-	c.UintVar(p, name, value, usage, isFlag, isConfig)
+	c.UintVar(p, name, value, usage)
 	return p
 }
 
 // Uint defines a uint flag with specified name, default value, and usage string.
 // The return value is the address of a uint  variable that stores the value of the flag.
-func Uint(name string, value uint, usage string, isFlag, isConfig bool) *uint {
-	return configuration.Uint(name, value, usage, isFlag, isConfig)
+func (c *ConfigoSet) UintFlag(name string, value uint, usage string) *uint {
+	p := new(uint)
+	c.UintFlagVar(p, name, value, usage)
+	return p
+}
+
+// Uint defines a uint flag with specified name, default value, and usage string.
+// The return value is the address of a uint  variable that stores the value of the flag.
+func (c *ConfigoSet) UintConfig(name string, value uint, usage string) *uint {
+	p := new(uint)
+	c.UintVar(p, name, value, usage)
+	return p
+}
+
+// Uint defines a uint flag with specified name, default value, and usage string.
+// The return value is the address of a uint  variable that stores the value of the flag.
+func Uint(name string, value uint, usage string) *uint {
+	return configuration.Uint(name, value, usage)
+}
+
+// Uint defines a uint flag with specified name, default value, and usage string.
+// The return value is the address of a uint  variable that stores the value of the flag.
+func UintFlag(name string, value uint, usage string) *uint {
+	return configuration.UintFlag(name, value, usage)
+}
+
+// Uint defines a uint flag with specified name, default value, and usage string.
+// The return value is the address of a uint  variable that stores the value of the flag.
+func UintConfig(name string, value uint, usage string) *uint {
+	return configuration.UintConfig(name, value, usage)
 }
 
 // Uint64Var defines a uint64 flag with specified name, default value, and usage string.
 // The argument p points to a uint64 variable in which to store the value of the flag.
-func (c *ConfigoSet) Uint64Var(p *uint64, name string, value uint64, usage string, isFlag, isConfig bool) {
+func (c *ConfigoSet) Uint64Var(p *uint64, name string, value uint64, usage string) {
+	isFlag := true
+	isConfig := true
 	c.Var(newUint64Value(value, p), name, usage, isFlag, isConfig)
 	flag.Uint64Var(p, name, value, usage)
 }
 
 // Uint64Var defines a uint64 flag with specified name, default value, and usage string.
 // The argument p points to a uint64 variable in which to store the value of the flag.
-func Uint64Var(p *uint64, name string, value uint64, usage string, isFlag, isConfig bool) {
+func (c *ConfigoSet) Uint64FlagVar(p *uint64, name string, value uint64, usage string) {
+	isFlag := true
+	isConfig := false
+	c.Var(newUint64Value(value, p), name, usage, isFlag, isConfig)
+	flag.Uint64Var(p, name, value, usage)
+}
+
+// Uint64Var defines a uint64 flag with specified name, default value, and usage string.
+// The argument p points to a uint64 variable in which to store the value of the flag.
+func (c *ConfigoSet) Uint64ConfigVar(p *uint64, name string, value uint64, usage string) {
+	isFlag := false
+	isConfig := true
+	c.Var(newUint64Value(value, p), name, usage, isFlag, isConfig)
+}
+
+// Uint64Var defines a uint64 flag with specified name, default value, and usage string.
+// The argument p points to a uint64 variable in which to store the value of the flag.
+func Uint64Var(p *uint64, name string, value uint64, usage string) {
+	isFlag := true
+	isConfig := true
+	configuration.Var(newUint64Value(value, p), name, usage, isFlag, isConfig)
+	flag.Uint64Var(p, name, value, usage)
+}
+
+// Uint64Var defines a uint64 flag with specified name, default value, and usage string.
+// The argument p points to a uint64 variable in which to store the value of the flag.
+func Uint64FlagVar(p *uint64, name string, value uint64, usage string) {
+	isFlag := true
+	isConfig := false
+	configuration.Var(newUint64Value(value, p), name, usage, isFlag, isConfig)
+	flag.Uint64Var(p, name, value, usage)
+}
+
+// Uint64Var defines a uint64 flag with specified name, default value, and usage string.
+// The argument p points to a uint64 variable in which to store the value of the flag.
+func Uint64ConfigVar(p *uint64, name string, value uint64, usage string) {
+	isFlag := true
+	isConfig := true
 	configuration.Var(newUint64Value(value, p), name, usage, isFlag, isConfig)
 	flag.Uint64Var(p, name, value, usage)
 }
 
 // Uint64 defines a uint64 flag with specified name, default value, and usage string.
 // The return value is the address of a uint64 variable that stores the value of the flag.
-func (c *ConfigoSet) Uint64(name string, value uint64, usage string, isFlag, isConfig bool) *uint64 {
+func (c *ConfigoSet) Uint64(name string, value uint64, usage string) *uint64 {
 	p := new(uint64)
-	c.Uint64Var(p, name, value, usage, isFlag, isConfig)
+	c.Uint64Var(p, name, value, usage)
 	return p
 }
 
 // Uint64 defines a uint64 flag with specified name, default value, and usage string.
 // The return value is the address of a uint64 variable that stores the value of the flag.
-func Uint64(name string, value uint64, usage string, isFlag, isConfig bool) *uint64 {
-	return configuration.Uint64(name, value, usage, isFlag, isConfig)
+func (c *ConfigoSet) Uint64Flag(name string, value uint64, usage string) *uint64 {
+	p := new(uint64)
+	c.Uint64FlagVar(p, name, value, usage)
+	return p
+}
+
+// Uint64 defines a uint64 flag with specified name, default value, and usage string.
+// The return value is the address of a uint64 variable that stores the value of the flag.
+func (c *ConfigoSet) Uint64Config(name string, value uint64, usage string) *uint64 {
+	p := new(uint64)
+	c.Uint64ConfigVar(p, name, value, usage)
+	return p
+}
+
+// Uint64 defines a uint64 flag with specified name, default value, and usage string.
+// The return value is the address of a uint64 variable that stores the value of the flag.
+func Uint64(name string, value uint64, usage string) *uint64 {
+	return configuration.Uint64(name, value, usage)
+}
+
+// Uint64 defines a uint64 flag with specified name, default value, and usage string.
+// The return value is the address of a uint64 variable that stores the value of the flag.
+func Uint64Flag(name string, value uint64, usage string) *uint64 {
+	return configuration.Uint64Flag(name, value, usage)
+}
+
+// Uint64 defines a uint64 flag with specified name, default value, and usage string.
+// The return value is the address of a uint64 variable that stores the value of the flag.
+func Uint64Config(name string, value uint64, usage string) *uint64 {
+	return configuration.Uint64Config(name, value, usage)
 }
 
 // StringVar defines a string flag with specified name, default value, and usage string.
 // The argument p points to a string variable in which to store the value of the flag.
-func (c *ConfigoSet) StringVar(p *string, name string, value string, usage string, isFlag, isConfig bool) {
+func (c *ConfigoSet) StringVar(p *string, name string, value string, usage string) {
+	isFlag := true
+	isConfig := true
 	c.Var(newStringValue(value, p), name, usage, isFlag, isConfig)
 	flag.StringVar(p, name, value, usage)
 }
 
 // StringVar defines a string flag with specified name, default value, and usage string.
 // The argument p points to a string variable in which to store the value of the flag.
-func StringVar(p *string, name string, value string, usage string, isFlag, isConfig bool) {
+func (c *ConfigoSet) StringFlagVar(p *string, name string, value string, usage string) {
+	isFlag := true
+	isConfig := false
+	c.Var(newStringValue(value, p), name, usage, isFlag, isConfig)
+	flag.StringVar(p, name, value, usage)
+}
+
+// StringVar defines a string flag with specified name, default value, and usage string.
+// The argument p points to a string variable in which to store the value of the flag.
+func (c *ConfigoSet) StringConfigVar(p *string, name string, value string, usage string) {
+	isFlag := false
+	isConfig := true
+	c.Var(newStringValue(value, p), name, usage, isFlag, isConfig)
+}
+
+// StringVar defines a string flag with specified name, default value, and usage string.
+// The argument p points to a string variable in which to store the value of the flag.
+func StringVar(p *string, name string, value string, usage string) {
+	isFlag := true
+	isConfig := true
 	configuration.Var(newStringValue(value, p), name, usage, isFlag, isConfig)
 	flag.StringVar(p, name, value, usage)
 }
 
+// StringVar defines a string flag with specified name, default value, and usage string.
+// The argument p points to a string variable in which to store the value of the flag.
+func StringFlagVar(p *string, name string, value string, usage string) {
+	isFlag := true
+	isConfig := false
+	configuration.Var(newStringValue(value, p), name, usage, isFlag, isConfig)
+	flag.StringVar(p, name, value, usage)
+}
+
+// StringVar defines a string flag with specified name, default value, and usage string.
+// The argument p points to a string variable in which to store the value of the flag.
+func StringConfigVar(p *string, name string, value string, usage string) {
+	isFlag := false
+	isConfig := true
+	configuration.Var(newStringValue(value, p), name, usage, isFlag, isConfig)
+}
+
 // String defines a string flag with specified name, default value, and usage string.
 // The return value is the address of a string variable that stores the value of the flag.
-func (c *ConfigoSet) String(name string, value string, usage string, isFlag, isConfig bool) *string {
+func (c *ConfigoSet) String(name string, value string, usage string) *string {
 	p := new(string)
-	c.StringVar(p, name, value, usage, isFlag, isConfig)
+	c.StringVar(p, name, value, usage)
 	return p
 }
 
 // String defines a string flag with specified name, default value, and usage string.
 // The return value is the address of a string variable that stores the value of the flag.
-func String(name string, value string, usage string, isFlag, isConfig bool) *string {
-	return configuration.String(name, value, usage, isFlag, isConfig)
+func (c *ConfigoSet) StringFlag(name string, value string, usage string) *string {
+	p := new(string)
+	c.StringFlagVar(p, name, value, usage)
+	return p
+}
+
+// String defines a string flag with specified name, default value, and usage string.
+// The return value is the address of a string variable that stores the value of the flag.
+func (c *ConfigoSet) StringConfig(name string, value string, usage string) *string {
+	p := new(string)
+	c.StringFlagVar(p, name, value, usage)
+	return p
+}
+
+// String defines a string flag with specified name, default value, and usage string.
+// The return value is the address of a string variable that stores the value of the flag.
+func String(name string, value string, usage string) *string {
+	return configuration.String(name, value, usage)
+}
+
+// String defines a string flag with specified name, default value, and usage string.
+// The return value is the address of a string variable that stores the value of the flag.
+func StringFlag(name string, value string, usage string) *string {
+	return configuration.StringFlag(name, value, usage)
+}
+
+// String defines a string flag with specified name, default value, and usage string.
+// The return value is the address of a string variable that stores the value of the flag.
+func StringConfig(name string, value string, usage string) *string {
+	return configuration.StringConfig(name, value, usage)
 }
 
 // Float64Var defines a float64 flag with specified name, default value, and usage string.
 // The argument p points to a float64 variable in which to store the value of the flag.
-func (c *ConfigoSet) Float64Var(p *float64, name string, value float64, usage string, isFlag, isConfig bool) {
+func (c *ConfigoSet) Float64Var(p *float64, name string, value float64, usage string) {
+	isFlag := true
+	isConfig := true
 	c.Var(newFloat64Value(value, p), name, usage, isFlag, isConfig)
 	flag.Float64Var(p, name, value, usage)
 }
 
 // Float64Var defines a float64 flag with specified name, default value, and usage string.
 // The argument p points to a float64 variable in which to store the value of the flag.
-func Float64Var(p *float64, name string, value float64, usage string, isFlag, isConfig bool) {
+func (c *ConfigoSet) Float64FlagVar(p *float64, name string, value float64, usage string) {
+	isFlag := true
+	isConfig := false
+	c.Var(newFloat64Value(value, p), name, usage, isFlag, isConfig)
+	flag.Float64Var(p, name, value, usage)
+}
+
+// Float64Var defines a float64 flag with specified name, default value, and usage string.
+// The argument p points to a float64 variable in which to store the value of the flag.
+func (c *ConfigoSet) Float64ConfigVar(p *float64, name string, value float64, usage string) {
+	isFlag := false
+	isConfig := true
+	c.Var(newFloat64Value(value, p), name, usage, isFlag, isConfig)
+}
+
+// Float64Var defines a float64 flag with specified name, default value, and usage string.
+// The argument p points to a float64 variable in which to store the value of the flag.
+func Float64Var(p *float64, name string, value float64, usage string) {
+	isFlag := true
+	isConfig := true
 	configuration.Var(newFloat64Value(value, p), name, usage, isFlag, isConfig)
 	flag.Float64Var(p, name, value, usage)
 }
 
+// Float64Var defines a float64 flag with specified name, default value, and usage string.
+// The argument p points to a float64 variable in which to store the value of the flag.
+func Float64FlagVar(p *float64, name string, value float64, usage string) {
+	isFlag := true
+	isConfig := false
+	configuration.Var(newFloat64Value(value, p), name, usage, isFlag, isConfig)
+	flag.Float64Var(p, name, value, usage)
+}
+
+// Float64Var defines a float64 flag with specified name, default value, and usage string.
+// The argument p points to a float64 variable in which to store the value of the flag.
+func Float64ConfigVar(p *float64, name string, value float64, usage string) {
+	isFlag := false
+	isConfig := true
+	configuration.Var(newFloat64Value(value, p), name, usage, isFlag, isConfig)
+}
+
 // Float64 defines a float64 flag with specified name, default value, and usage string.
 // The return value is the address of a float64 variable that stores the value of the flag.
-func (c *ConfigoSet) Float64(name string, value float64, usage string, isFlag, isConfig bool) *float64 {
+func (c *ConfigoSet) Float64(name string, value float64, usage string) *float64 {
 	p := new(float64)
-	c.Float64Var(p, name, value, usage, isFlag, isConfig)
+	c.Float64Var(p, name, value, usage)
 	return p
 }
 
 // Float64 defines a float64 flag with specified name, default value, and usage string.
 // The return value is the address of a float64 variable that stores the value of the flag.
-func Float64(name string, value float64, usage string, isFlag, isConfig bool) *float64 {
-	return configuration.Float64(name, value, usage, isFlag, isConfig)
+func (c *ConfigoSet) Float64Flag(name string, value float64, usage string) *float64 {
+	p := new(float64)
+	c.Float64FlagVar(p, name, value, usage)
+	return p
+}
+
+// Float64 defines a float64 flag with specified name, default value, and usage string.
+// The return value is the address of a float64 variable that stores the value of the flag.
+func (c *ConfigoSet) Float64Config(name string, value float64, usage string) *float64 {
+	p := new(float64)
+	c.Float64ConfigVar(p, name, value, usage)
+	return p
+}
+
+// Float64 defines a float64 flag with specified name, default value, and usage string.
+// The return value is the address of a float64 variable that stores the value of the flag.
+func Float64(name string, value float64, usage string) *float64 {
+	return configuration.Float64(name, value, usage)
+}
+
+// Float64 defines a float64 flag with specified name, default value, and usage string.
+// The return value is the address of a float64 variable that stores the value of the flag.
+func Float64Flag(name string, value float64, usage string) *float64 {
+	return configuration.Float64Flag(name, value, usage)
+}
+
+// Float64 defines a float64 flag with specified name, default value, and usage string.
+// The return value is the address of a float64 variable that stores the value of the flag.
+func Float64Config(name string, value float64, usage string) *float64 {
+	return configuration.Float64Config(name, value, usage)
 }
 
 // DurationVar defines a time.Duration flag with specified name, default value, and usage string.
 // The argument p points to a time.Duration variable in which to store the value of the flag.
-func (c *ConfigoSet) DurationVar(p *time.Duration, name string, value time.Duration, usage string, isFlag, isConfig bool) {
+func (c *ConfigoSet) DurationVar(p *time.Duration, name string, value time.Duration, usage string) {
+	isFlag := true
+	isConfig := true
 	c.Var(newDurationValue(value, p), name, usage, isFlag, isConfig)
 	flag.DurationVar(p, name, value, usage)
 }
 
 // DurationVar defines a time.Duration flag with specified name, default value, and usage string.
 // The argument p points to a time.Duration variable in which to store the value of the flag.
-func DurationVar(p *time.Duration, name string, value time.Duration, usage string, isFlag, isConfig bool) {
+func (c *ConfigoSet) DurationFlagVar(p *time.Duration, name string, value time.Duration, usage string) {
+	isFlag := true
+	isConfig := false
+	c.Var(newDurationValue(value, p), name, usage, isFlag, isConfig)
+	flag.DurationVar(p, name, value, usage)
+}
+
+// DurationVar defines a time.Duration flag with specified name, default value, and usage string.
+// The argument p points to a time.Duration variable in which to store the value of the flag.
+func (c *ConfigoSet) DurationConfigVar(p *time.Duration, name string, value time.Duration, usage string) {
+	isFlag := false
+	isConfig := true
+	c.Var(newDurationValue(value, p), name, usage, isFlag, isConfig)
+}
+
+// DurationVar defines a time.Duration flag with specified name, default value, and usage string.
+// The argument p points to a time.Duration variable in which to store the value of the flag.
+func DurationVar(p *time.Duration, name string, value time.Duration, usage string) {
+	isFlag := true
+	isConfig := true
 	configuration.Var(newDurationValue(value, p), name, usage, isFlag, isConfig)
 	flag.DurationVar(p, name, value, usage)
 }
 
+// DurationVar defines a time.Duration flag with specified name, default value, and usage string.
+// The argument p points to a time.Duration variable in which to store the value of the flag.
+func DurationFlagVar(p *time.Duration, name string, value time.Duration, usage string) {
+	isFlag := true
+	isConfig := false
+	configuration.Var(newDurationValue(value, p), name, usage, isFlag, isConfig)
+	flag.DurationVar(p, name, value, usage)
+}
+
+// DurationVar defines a time.Duration flag with specified name, default value, and usage string.
+// The argument p points to a time.Duration variable in which to store the value of the flag.
+func DurationConfigVar(p *time.Duration, name string, value time.Duration, usage string) {
+	isFlag := false
+	isConfig := true
+	configuration.Var(newDurationValue(value, p), name, usage, isFlag, isConfig)
+}
+
 // Duration defines a time.Duration flag with specified name, default value, and usage string.
 // The return value is the address of a time.Duration variable that stores the value of the flag.
-func (c *ConfigoSet) Duration(name string, value time.Duration, usage string, isFlag, isConfig bool) *time.Duration {
+func (c *ConfigoSet) Duration(name string, value time.Duration, usage string) *time.Duration {
 	p := new(time.Duration)
-	c.DurationVar(p, name, value, usage, isFlag, isConfig)
+	c.DurationVar(p, name, value, usage)
 	return p
 }
 
 // Duration defines a time.Duration flag with specified name, default value, and usage string.
 // The return value is the address of a time.Duration variable that stores the value of the flag.
-func Duration(name string, value time.Duration, usage string, isFlag, isConfig bool) *time.Duration {
-	return configuration.Duration(name, value, usage, isFlag, isConfig)
+func (c *ConfigoSet) DurationFlag(name string, value time.Duration, usage string) *time.Duration {
+	p := new(time.Duration)
+	c.DurationFlagVar(p, name, value, usage)
+	return p
+}
+
+// Duration defines a time.Duration flag with specified name, default value, and usage string.
+// The return value is the address of a time.Duration variable that stores the value of the flag.
+func (c *ConfigoSet) DurationConfig(name string, value time.Duration, usage string) *time.Duration {
+	p := new(time.Duration)
+	c.DurationConfigVar(p, name, value, usage)
+	return p
+}
+
+// Duration defines a time.Duration flag with specified name, default value, and usage string.
+// The return value is the address of a time.Duration variable that stores the value of the flag.
+func Duration(name string, value time.Duration, usage string) *time.Duration {
+	return configuration.Duration(name, value, usage)
+}
+
+// Duration defines a time.Duration flag with specified name, default value, and usage string.
+// The return value is the address of a time.Duration variable that stores the value of the flag.
+func DurationFlag(name string, value time.Duration, usage string) *time.Duration {
+	return configuration.DurationFlag(name, value, usage)
+}
+
+// Duration defines a time.Duration flag with specified name, default value, and usage string.
+// The return value is the address of a time.Duration variable that stores the value of the flag.
+func DurationConfig(name string, value time.Duration, usage string) *time.Duration {
+	return configuration.DurationConfig(name, value, usage)
 }
 
 // Var defines a flag with the specified name and usage string. The type and
@@ -636,9 +1106,13 @@ func (c *ConfigoSet) Var(value flag.Value, name string, usage string, isFlag, is
 // the caller could create a flag that turns a comma-separated string into a
 // slice of strings by giving the slice the methods of Value; in particular,
 // Set would decompose the comma-separated string into the slice.
+// TODO This function does not appear to be used.
 func Var(value flag.Value, name string, usage string, isFlag, isConfig bool) {
 	configuration.Var(value, name, usage, isFlag, isConfig)
-	flag.Var(value, name, usage)
+
+	if isFlag {
+		flag.Var(value, name, usage)
+	}
 }
 
 // NArg is the number of arguments remaining after flags have been processed.

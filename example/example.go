@@ -6,7 +6,7 @@ import (
 	"strings"
 	"time"
 
-    "github.com/quincy/configo"
+	"github.com/quincy/configo"
 )
 
 // Example 1: A single string flag called "species" with default value "gopher".
@@ -23,7 +23,7 @@ func init() {
 		usage         = "the variety of gopher"
 	)
 	configo.StringVar(&gopherType, "gopher_type", defaultGopher, usage, true, true)
-    // shorthand version is not valid in the config file
+	// shorthand version is not valid in the config file
 	configo.StringVar(&gopherType, "g", defaultGopher, usage+" (shorthand)", true, false)
 }
 
@@ -70,13 +70,23 @@ func init() {
 	configo.Var(&intervalFlag, "deltaT", "comma-separated list of intervals to use between events", true, true)
 }
 
-func main() {
-    if err := configo.Parse(); err != nil {
-        panic(err)
-    }
+// Example 4: some flag only options
+var aliveFlag bool
+var furryConfig bool
 
-    fmt.Printf("species      = %s\n", *species)
-    fmt.Printf("gopherType   = %s\n", gopherType)
-    fmt.Printf("intervalFlag = %s\n", intervalFlag)
+func init() {
+	configo.BoolFlagVar(&aliveFlag, "alive", true, "set false to kill")
+	configo.BoolConfigVar(&furryConfig, "furry", true, "furry or not")
 }
 
+func main() {
+	if err := configo.Parse(); err != nil {
+		panic(err)
+	}
+
+	fmt.Printf("species      = %s\n", *species)
+	fmt.Printf("gopherType   = %s\n", gopherType)
+	fmt.Printf("intervalFlag = %s\n", intervalFlag)
+	fmt.Printf("alive        = %v\n", aliveFlag)
+	fmt.Printf("furry        = %v\n", furryConfig)
+}
