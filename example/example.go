@@ -10,7 +10,7 @@ import (
 )
 
 // Example 1: A single string flag called "species" with default value "gopher".
-var species = configo.String("species", "gopher", "the species we are studying", true, true)
+var species = configo.String("species", "gopher", "the species we are studying")
 
 // Example 2: Two flags sharing a variable, so we can have a shorthand.
 // The order of initialization is undefined, so make sure both use the
@@ -22,9 +22,9 @@ func init() {
 		defaultGopher = "pocket"
 		usage         = "the variety of gopher"
 	)
-	configo.StringVar(&gopherType, "gopher_type", defaultGopher, usage, true, true)
+	configo.StringVar(&gopherType, "gopher_type", defaultGopher, usage)
 	// shorthand version is not valid in the config file
-	configo.StringVar(&gopherType, "g", defaultGopher, usage+" (shorthand)", true, false)
+	configo.StringVar(&gopherType, "g", defaultGopher, usage+" (shorthand)")
 }
 
 // Example 3: A user-defined flag type, a slice of durations.
