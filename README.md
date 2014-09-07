@@ -22,11 +22,7 @@ Usage
         "github.com/quincy/configo"
     )
     
-    var species = configo.String("species", "gopher", "the species we are studying", true, true)
-    //                                                                                 ^     ^
-    //                                This option can be set from the command line ----+     |
-    //                                                                                       |
-    //                        This option can be set from the configuration file ------------+
+    var species = configo.String("species", "gopher", "the species we are studying")
 
     configo.SetDelimiter(":")  // Default is "="
     configo.Parse()
