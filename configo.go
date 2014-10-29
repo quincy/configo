@@ -234,11 +234,12 @@ func NewConfigoSet(name string, errorHandling flag.ErrorHandling, path string) *
 // in the current working directory.  The name of the config file will be the
 // standard unix naming convention "." + {ProgramName} + "rc".
 func DefaultConfigPath() string {
+    filename := fmt.Sprintf(".%src", baseProgName)
     usr, err := user.Current()
     if err != nil {
-        return fmt.Sprintf(".%src", baseProgName)
+        return filename
     }
-    return fmt.Sprintf(".%src", filepath.Join(usr.HomeDir, baseProgName))
+    return filepath.Join(usr.HomeDir, filename)
 }
 
 // SetPath sets the path to the configuration file.
